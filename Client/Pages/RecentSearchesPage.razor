@@ -1,0 +1,33 @@
+﻿@using OMDbMovieSearch.Client.Services;
+
+@page "/recent"
+@inject MovieApiService MovieApi
+
+<h3>Recent Searches</h3>
+
+@if (recent is null)
+{
+    <p>Loading...</p>
+}
+else if (recent.Count == 0)
+{
+    <p>No recent searches.</p>
+}
+else
+{
+    <ul>
+        @foreach (var item in recent)
+        {
+            <li>@item</li>
+        }
+    </ul>
+}
+
+@code {
+    private List<string>? recent;
+
+    protected override async Task OnInitializedAsync()
+    {
+        recent = await MovieApi.GetRecentSearchesAsync();
+    }
+}
