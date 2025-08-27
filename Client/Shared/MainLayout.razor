@@ -1,17 +1,29 @@
 ﻿@inherits LayoutComponentBase
 
-<div class="page">
-    <div class="sidebar">
-        <NavMenu />
+<HeadContent>
+    <RadzenTheme Theme="material" />
+</HeadContent>
+
+<RadzenHeader Style="padding: 0 1rem; background: #3f51b5; color: white;">
+    <div style="display: flex; align-items: center; width: 100%; padding: 1rem;">
+        <!-- Title -->
+        <NavLink href="/" style="text-decoration:none; color:inherit;">
+            <h2 style="margin: 0;">🎬 OMDb Movie Search</h2>
+        </NavLink>
+
+        <!-- Recent -->
+        <NavLink href="/recent" style="text-decoration:none; color:inherit; font-size: 1.1rem; margin-left: 3rem;">
+            Recent
+        </NavLink>
     </div>
+</RadzenHeader>
 
-    <main>
-        <div class="top-row px-4">
-            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
-        </div>
+<RadzenBody>
+    <div class="rz-p-4">
+        @Body
+    </div>
+</RadzenBody>
 
-        <article class="content px-4">
-            @Body
-        </article>
-    </main>
-</div>
+<RadzenFooter Style="padding: 1rem; background: #f5f5f5; text-align: center;">
+    <span>&copy; @(DateTime.Now.Year) OMDb Movie Search</span>
+</RadzenFooter>
