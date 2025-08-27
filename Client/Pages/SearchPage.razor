@@ -35,7 +35,7 @@
     {
         if (!string.IsNullOrWhiteSpace(searchText))
         {
-            results = await MovieApi.SearchMoviesAsync(searchText);
+            results = await MovieApi.GetMoviesAsync(searchText);
         }
     }
 }

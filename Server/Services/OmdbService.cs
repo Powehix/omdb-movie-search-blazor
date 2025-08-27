@@ -1,81 +1,81 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
 using OMDbMovieSearch.Server.Interfaces;
 using OMDbMovieSearch.Shared.Models;
-using System.Text.Json;
 
 namespace OMDbMovieSearch.Server.Services
 {
     public class OmdbService : IOmdbService
     {
-        private readonly HttpClient _http;
-        private readonly string _apiKey;
+        private readonly HttpClient _httpClient;
         private readonly IMemoryCache _cache;
-        private readonly ILogger<OmdbService> _log;
-        private static readonly JsonSerializerOptions _jsonOptions = new() { PropertyNameCaseInsensitive = true };
+        private readonly ILogger<OmdbService> _logger;
+        private readonly string _apiKey;
 
-        public OmdbService(HttpClient httpClient, IConfiguration configuration, IMemoryCache cache, ILogger<OmdbService> log)
+        public OmdbService(HttpClient httpClient, IMemoryCache cache, ILogger<OmdbService> logger, IConfiguration config)
         {
-            _http = httpClient;
-            _apiKey = configuration["Omdb:ApiKey"] ?? throw new InvalidOperationException("OMDb API key not configured.");
+            _httpClient = httpClient;
             _cache = cache;
-            _log = log;
+            _logger = logger;
+            _apiKey = config["Omdb:ApiKey"] ?? throw new InvalidOperationException("OMDb API key not configured.");
         }
 
         // Calls the OMDb API to search for movies by title
-        public async Task<IReadOnlyList<MovieSearchResult>> SearchMoviesAsync(string query, CancellationToken ct)
+        public async Task<List<MovieSearchResult>> GetMoviesAsync(string query, CancellationToken ct)
         {
-            if (string.IsNullOrWhiteSpace(query)) return Array.Empty<MovieSearchResult>();
+            if (string.IsNullOrWhiteSpace(query))
+                return new();
 
-            var cacheKey = $"search::{query.Trim().ToLowerInvariant()}";
-            if (_cache.TryGetValue(cacheKey, out IReadOnlyList<MovieSearchResult> cached)) return cached;
+            if (_cache.TryGetValue(query, out List<MovieSearchResult> cached))
+                return cached;
 
-            var url = $"?apikey={_apiKey}&s={Uri.EscapeDataString(query)}";
             try
             {
-                var resp = await _http.GetAsync(url, ct);
-                if (!resp.IsSuccessStatusCode)
-                {
-                    _log.LogWarning("OMDb returned {StatusCode} for query {Query}", resp.StatusCode, query);
-                    return Array.Empty<MovieSearchResult>();
-                }
+                var response = await _httpClient.GetFromJsonAsync<OmdbSearchResponse>(
+                    $"?apikey={_apiKey}&s={query}", ct);
 
-                using var stream = await resp.Content.ReadAsStreamAsync(ct);
-                using var doc = await JsonDocument.ParseAsync(stream, cancellationToken: ct);
-                if (!doc.RootElement.TryGetProperty("Search", out var node)) return Array.Empty<MovieSearchResult>();
+                if (response?.Search == null)
+                    return new();
 
-                var list = JsonSerializer.Deserialize<List<MovieSearchResult>>(node.GetRawText(), _jsonOptions) ?? new();
-                _cache.Set(cacheKey, list, TimeSpan.FromMinutes(5));
-                return list;
+                _cache.Set(query, response.Search, TimeSpan.FromMinutes(5));
+                return response.Search;
             }
-            catch (OperationCanceledException) { throw; }
-            catch (Exception ex)
+            catch (HttpRequestException ex)
             {
-                _log.LogError(ex, "Error while searching OMDb for {Query}", query);
-                return Array.Empty<MovieSearchResult>();
+                _logger.LogError(ex, "Error fetching search results for {Query}", query);
+                return new();
             }
         }
 
         // Calls the OMDb API to retrieve full movie details by IMDb ID
         public async Task<MovieDetails?> GetMovieDetailsAsync(string imdbId, CancellationToken ct)
         {
-            if (string.IsNullOrWhiteSpace(imdbId)) return null;
+            if (string.IsNullOrWhiteSpace(imdbId))
+                return null;
 
-            var cacheKey = $"details::{imdbId}";
-            if (_cache.TryGetValue(cacheKey, out MovieDetails cached)) return cached;
+            if (_cache.TryGetValue(imdbId, out MovieDetails cached))
+                return cached;
 
-            var url = $"?apikey={_apiKey}&i={Uri.EscapeDataString(imdbId)}&plot=full";
             try
             {
-                var model = await _http.GetFromJsonAsync<MovieDetails>(url, _jsonOptions, ct);
-                if (model != null) _cache.Set(cacheKey, model, TimeSpan.FromMinutes(30));
-                return model;
+                var movie = await _httpClient.GetFromJsonAsync<MovieDetails>(
+                    $"?apikey={_apiKey}&i={imdbId}&plot=full", ct);
+
+                if (movie != null)
+                    _cache.Set(imdbId, movie, TimeSpan.FromMinutes(30));
+
+                return movie;
             }
-            catch (OperationCanceledException) { throw; }
-            catch (Exception ex)
+            catch (HttpRequestException ex)
             {
-                _log.LogError(ex, "Error while fetching details for {ImdbId}", imdbId);
+                _logger.LogError(ex, "Error fetching movie details for {ImdbId}", imdbId);
                 return null;
             }
+        }
+
+        // Small DTO wrapper for search results
+        public class OmdbSearchResponse
+        {
+            public List<MovieSearchResult>? Search { get; set; }
         }
     }
 }

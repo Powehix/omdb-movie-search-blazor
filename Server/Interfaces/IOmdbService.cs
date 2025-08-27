@@ -7,7 +7,7 @@ namespace OMDbMovieSearch.Server.Interfaces
     /// </summary>
     public interface IOmdbService
     {
-        Task<IReadOnlyList<MovieSearchResult>> SearchMoviesAsync(string query, CancellationToken ct);
+        Task<List<MovieSearchResult>> GetMoviesAsync(string query, CancellationToken ct);
         Task<MovieDetails?> GetMovieDetailsAsync(string imdbId, CancellationToken ct);
     }
 }

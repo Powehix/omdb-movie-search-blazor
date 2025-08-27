@@ -15,8 +15,8 @@ namespace OMDbMovieSearch.Server.Controllers
             _omdb = omdb;
         }
 
-        [HttpGet("search")]
-        public async Task<IActionResult> Search([FromQuery] string title, CancellationToken ct)
+        [HttpGet("getMovies")]
+        public async Task<IActionResult> GetMovies([FromQuery] string title, CancellationToken ct)
         {
             if (!string.IsNullOrWhiteSpace(title))
             {
@@ -24,19 +24,24 @@ namespace OMDbMovieSearch.Server.Controllers
                     RecentQueries.Dequeue();
                 RecentQueries.Enqueue(title);
             }
+            else
+            {
+                return BadRequest("Title is required");
+            }
 
-            var result = await _omdb.SearchMoviesAsync(title, ct);
+                var result = await _omdb.GetMoviesAsync(title, ct);
             return Ok(result);
         }
 
-        [HttpGet("recent")]
-        public IActionResult Recent()
+        [HttpGet("getRecentMovies")]
+        public IActionResult GetRecentMovies()
         {
+            // Return the last 5 titles, newest last
             return Ok(RecentQueries.Reverse());
         }
 
-        [HttpGet("details/{imdbId}")]
-        public async Task<IActionResult> Details(string imdbId, CancellationToken ct)
+        [HttpGet("getMovieDetails/{imdbId}")]
+        public async Task<IActionResult> GetMovieDetails(string imdbId, CancellationToken ct)
         {
             var movie = await _omdb.GetMovieDetailsAsync(imdbId, ct);
             return Ok(movie);
