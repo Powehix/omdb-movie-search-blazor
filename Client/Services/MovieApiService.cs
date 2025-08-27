@@ -17,7 +17,7 @@ namespace OMDbMovieSearch.Client.Services
             return await _http.GetFromJsonAsync<List<MovieSearchResult>>($"api/movies/search?title={title}") ?? new();
         }
 
-        public async Task<MovieDetails> GetMovieDetailsAsync(string imdbId)
+        public async Task<MovieDetails?> GetMovieDetailsAsync(string imdbId)
         {
             return await _http.GetFromJsonAsync<MovieDetails>($"api/movies/details/{imdbId}");
         }

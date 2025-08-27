@@ -1,5 +1,5 @@
-using OMDbMovieSearch.Server.Services;
 using Microsoft.AspNetCore.Mvc;
+using OMDbMovieSearch.Server.Interfaces;
 
 namespace OMDbMovieSearch.Server.Controllers
 {
@@ -8,15 +8,15 @@ namespace OMDbMovieSearch.Server.Controllers
     public class MoviesController : ControllerBase
     {
         private static readonly Queue<string> RecentQueries = new();
-        private readonly OmdbService _omdb;
+        private readonly IOmdbService _omdb;
 
-        public MoviesController(OmdbService omdb)
+        public MoviesController(IOmdbService omdb)
         {
             _omdb = omdb;
         }
 
         [HttpGet("search")]
-        public async Task<IActionResult> Search([FromQuery] string title)
+        public async Task<IActionResult> Search([FromQuery] string title, CancellationToken ct)
         {
             if (!string.IsNullOrWhiteSpace(title))
             {
@@ -25,7 +25,7 @@ namespace OMDbMovieSearch.Server.Controllers
                 RecentQueries.Enqueue(title);
             }
 
-            var result = await _omdb.SearchMovies(title);
+            var result = await _omdb.SearchMoviesAsync(title, ct);
             return Ok(result);
         }
 
@@ -36,9 +36,9 @@ namespace OMDbMovieSearch.Server.Controllers
         }
 
         [HttpGet("details/{imdbId}")]
-        public async Task<IActionResult> Details(string imdbId)
+        public async Task<IActionResult> Details(string imdbId, CancellationToken ct)
         {
-            var movie = await _omdb.GetMovieDetails(imdbId);
+            var movie = await _omdb.GetMovieDetailsAsync(imdbId, ct);
             return Ok(movie);
         }
     }

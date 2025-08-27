@@ -1,5 +1,5 @@
+using OMDbMovieSearch.Server.Interfaces;
 using OMDbMovieSearch.Server.Services;
-using Microsoft.AspNetCore.ResponseCompression;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,8 +9,15 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 
 builder.Services.AddScoped<OmdbService>();
-builder.Services.AddHttpClient<OmdbService>();
 builder.Services.AddHttpClient();
+
+builder.Services.AddMemoryCache();
+
+builder.Services.AddHttpClient<IOmdbService, OmdbService>(client =>
+ {
+     client.BaseAddress = new Uri("http://www.omdbapi.com/");
+     client.Timeout = TimeSpan.FromSeconds(10);
+ });
 
 var app = builder.Build();
 
