@@ -1,28 +1,28 @@
 ﻿@page "/"
 @inject MovieApiService MovieApi
 
-<RadzenCard Style="margin:1rem; padding:1rem;">
+<div style="padding: 1.5rem;">
     <h3>Movie Search</h3>
 
-    <div class="d-flex flex-column" style="width:15rem; gap:0.5rem;">
-        <RadzenTextBox @bind-Value="searchText" Placeholder="Enter movie title" Style="width:100%; font-size:0.9rem; padding:0.25rem;" />
+    <div class="d-flex flex-column" style="width: 15rem; gap: 0.5rem; padding-top: 2rem;">
+        <RadzenTextBox @bind-Value="searchText" Placeholder="Enter movie title" Style="width: 100%; font-size: 0.9rem; padding: 0.25rem;" />
 
-        <RadzenButton Text="Search" Click="@Search" Icon="search" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small" Style="width:100%;" />
+        <RadzenButton Text="Search" Click="@Search" Icon="search" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small" Style="width: 100%; background: #7017ac" />
     </div>
 
     @if (results is not null)
     {
-        <RadzenDataList Data="@results" TItem="MovieSearchResult" AllowPaging="true" PageSize="5" Style="margin-top:1rem;">
+        <RadzenDataList Data="@results" TItem="MovieSearchResult" AllowPaging="true" PageSize="5" Style="margin-top: 1rem;">
             <Template Context="movie">
-                <div style="padding:0.5rem 0;">
-                    <RadzenLink Href="@($"movie/{movie.imdbID}")" Style="font-weight:bold">
+                <div style="padding: 0.5rem 0;">
+                    <RadzenLink Href="@($"movie/{movie.imdbID}")" Style="font-weight: bold">
                         @movie.Title (@movie.Year)
                     </RadzenLink>
                 </div>
             </Template>
         </RadzenDataList>
     }
-</RadzenCard>
+</div>
 
 @code {
     private string searchText;

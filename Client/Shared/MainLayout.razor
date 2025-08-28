@@ -4,26 +4,36 @@
     <RadzenTheme Theme="material" />
 </HeadContent>
 
-<RadzenHeader Style="padding: 0 1rem; background: #3f51b5; color: white;">
-    <div style="display: flex; align-items: center; width: 100%; padding: 1rem;">
-        <!-- Title -->
-        <NavLink href="/" style="text-decoration:none; color:inherit;">
-            <h2 style="margin: 0;">🎬 OMDb Movie Search</h2>
-        </NavLink>
+<!-- Top bar -->
+<RadzenHeader Style="padding: 1rem; background: #fff; color: #444; display: flex; align-items: center;">
+    <!-- Collapsible menu icon -->
+    <RadzenSidebarToggle Style="margin-right: 1rem; color: #444;" />
 
-        <!-- Recent -->
-        <NavLink href="/recent" style="text-decoration:none; color:inherit; font-size: 1.1rem; margin-left: 3rem;">
-            Recent
-        </NavLink>
-    </div>
+    <h3 style="margin: 0;">
+        <span style="color: #444;">Blazor</span>
+        <span style="color: #7017ac; margin-left: 0.5rem; font-weight: bold;">OMDb Movie Search</span>
+    </h3>
 </RadzenHeader>
 
 <RadzenBody>
-    <div class="rz-p-4">
-        @Body
+    <div class="page flex h-screen">
+        <!-- Left nav -->
+        <div class="sidebar w-64 p-2">
+            <RadzenPanelMenu ExpandMode="Single">
+                <RadzenPanelMenuItem Text="Home" Path="/" Icon="home" Match="NavLinkMatch.All" />
+                <RadzenPanelMenuItem Text="Recent" Path="/recent" Icon="Search" />
+            </RadzenPanelMenu>
+        </div>
+
+        <!-- Main content -->
+        <div class="flex-1 overflow-auto">
+            <div class="content p-4">
+                @Body
+            </div>
+        </div>
     </div>
 </RadzenBody>
 
-<RadzenFooter Style="padding: 1rem; background: #f5f5f5; text-align: center;">
+@* <RadzenFooter Style="padding: 1rem; background: #f5f5f5; text-align: center;">
     <span>&copy; @(DateTime.Now.Year) OMDb Movie Search</span>
-</RadzenFooter>
+</RadzenFooter> *@

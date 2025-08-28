@@ -99,3 +99,51 @@ a, .btn-link {
     .loading-progress-text:after {
         content: var(--blazor-load-percentage-text, "Loading");
     }
+
+.rz-body {
+    margin-left: 0 !important;
+    padding-left: 0 !important;
+    background-color: #f4f5f9 !important;
+}
+
+/* Sidebar background and text */
+.sidebar {
+    background: #262526 !important;
+    color: #fff !important;
+}
+
+.p-2 {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+/* RadzenPanelMenu background */
+.rz-panel-menu {
+    background: #262526 !important;
+}
+
+/* RadzenPanelMenu item links */
+.rz-navigation-item-link {
+    color: #fff !important;
+    background: #262526 !important;
+    font-weight: bold !important;
+    transition: background 0.2s, color 0.2s;
+}
+
+/* Remove separator line between menu items */
+.rz-panel-menu .rz-navigation-item {
+    border-bottom: none !important;
+}
+
+/* Active and hover states for menu items */
+.rz-navigation-item-link:hover,
+.rz-navigation-item-link.active {
+    background: #7017ac !important;
+    color: #fff !important;
+}
+
+    /* Make icons white on hover/active */
+    .rz-navigation-item-link:hover .rz-navigation-item-icon,
+    .rz-navigation-item-link.active .rz-navigation-item-icon {
+        color: #fff !important;
+    }

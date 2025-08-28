@@ -1,24 +1,26 @@
 ﻿@page "/movie/{imdbId}"
 @inject MovieApiService MovieApi
 
-<h3>Movie Details</h3>
+<div style="padding: 1.5rem;">
+    <h3>Movie Details</h3>
 
-@if (movie is null)
-{
-    <p>Loading...</p>
-}
-else
-{
-    <div>
-        <img src="@movie.Poster" alt="Poster" width="200" />
-        <h4>@movie.Title (@movie.Year)</h4>
-        <p><strong>Genre:</strong> @movie.Genre</p>
-        <p><strong>Director:</strong> @movie.Director</p>
-        <p><strong>Actors:</strong> @movie.Actors</p>
-        <p><strong>Plot:</strong> @movie.Plot</p>
-        <p><strong>IMDB Rating:</strong> @movie.imdbRating</p>
-    </div>
-}
+    @if (movie is null)
+    {
+        <p>Loading...</p>
+    }
+    else
+    {
+        <div>
+            <img src="@movie.Poster" alt="Poster" width="200" />
+            <h4>@movie.Title (@movie.Year)</h4>
+            <p><strong>Genre:</strong> @movie.Genre</p>
+            <p><strong>Director:</strong> @movie.Director</p>
+            <p><strong>Actors:</strong> @movie.Actors</p>
+            <p><strong>Plot:</strong> @movie.Plot</p>
+            <p><strong>IMDB Rating:</strong> @movie.imdbRating</p>
+        </div>
+    }
+</div>
 
 @code {
     [Parameter] public string imdbId { get; set; }
